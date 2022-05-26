@@ -205,6 +205,9 @@ bathroom = False
 Turner = True
 deskOpened = False
 faucet = False
+slotOneInsert = False
+slotTwoInsert = False
+slotThreeInsert = False
 largeSans = pygame.font.Font("fonts/OpenSans-Regular.ttf", 28)
 
 t = 1800
@@ -381,10 +384,16 @@ while run:
         #BathroomMirror.draw()
       if BathroomArea == False and bathroom == True:
         ZoomExitButtonRect = pygame.Rect(18, 16, 100, 100)
-        sinkRect = pygame.Rect(487, 223, 10, 10)
-        BathroomMirrorRect = pygame.Rect(475, 58, 20, 40)
-        faucetRect = pygame.Rect(293, 91, 30, 170) #this is not going to be what is used for it, it is only for testing the faucet event of summoning fogged mirror
+        sinkRect = pygame.Rect(470, 204, 90, 43)
+        BathroomMirrorRect = pygame.Rect(475, 58, 104, 140) #589, 207
+        bathroomSlotOneRect = pygame.Rect(86, 188, 10, 51) #96, 239
+        bathroomSlotTwoRect = pygame.Rect(120, 188, 10, 51)
+        bathroomSlotThreeRect = pygame.Rect(158, 188, 10, 51)
+        waterRect = pygame.Rect(135, 289, 399, 105) # 534, 393 this is not going to be what is used for it, it is only for testing the faucet event of summoning fogged mirror
         pygame.draw.rect(screen, BLACK, sinkRect)
+        pygame.draw.rect(screen, BLACK, bathroomSlotOneRect)
+        pygame.draw.rect(screen, BLACK, bathroomSlotTwoRect)
+        pygame.draw.rect(screen, BLACK, bathroomSlotThreeRect)
         pygame.draw.rect(screen, BLACK, ZoomExitButtonRect)
         pygame.draw.rect(screen, BLACK, BathroomMirrorRect)
         pygame.display.update()
@@ -396,7 +405,7 @@ while run:
           pygame.display.update()
           #ZoomExitButton.draw()
         elif BathroomMirrorRect.collidepoint(x, y) and faucet == True and sink == False:
-          print("This mirror seems interesting hmmm......")
+          print("foggy mirror......")
           BackupScreen = screen.copy()
           mirror = True
           foggedMirror.draw()
@@ -405,15 +414,24 @@ while run:
           mirror = False
           sink = False
           BathroomScreen.draw()
+        if bathroomSlotOneRect.collidepoint(x, y) and mirror == False and sink == False:
+          slotOneInsert = True
+          print('slot one = true')
+        if bathroomSlotTwoRect.collidepoint(x, y) and mirror == False and sink == False:
+          slotTwoInsert = True
+          print('slot two = true')
+        if bathroomSlotThreeRect.collidepoint(x, y) and mirror == False and sink == False:
+          slotThreeInsert = True
+          print('slot three = true')
         if sinkRect.collidepoint(x, y) and sink == False and mirror == False:
           sink = True
           sinkScreen.draw()
-          pygame.draw.rect(screen, BLACK, faucetRect)
+          pygame.draw.rect(screen, BLACK, waterRect)
           pygame.display.update()
-        if faucetRect.collidepoint(x, y) and sink == True:
+        if waterRect.collidepoint(x, y) and sink == True and slotOneInsert == True and slotTwoInsert == True and slotThreeInsert == True:
           faucet = True
           print('steam')
-      if leftArrowRect.collidepoint(x, y) and menuOpen == False and zoomIn == False and inventoryOpen == False: 
+      if leftArrowRect.collidepoint(x, y) and menuOpen == False and zoomIn == False and inventoryOpen == False and bathroom == False: 
         if imageIndex == 0:
           imageIndex = len(imageList) - 1
           screen.fill((0, 0, 0, 0))
