@@ -13,6 +13,7 @@ pygame.init()
 
 #loading images and game sizing
 screen = pygame.display.set_mode((screenWidth, screenHeight))
+brokenMirror = pygame.image.load('assets/images/Bathroom/brokenMirrorKey.png').convert()
 pygame.display.set_caption("Menu")
 menuScreen = pygame.image.load("title/menuFullScreen.png").convert()
 BathroomMirror = pygame.image.load("assets/images/Bathroom/BathroomMirror.png").convert_alpha()
@@ -118,6 +119,7 @@ class imageScaling():
 
 #images
 menuScreen = imageScaling(0, 0, menuScreen, 0.5)
+brokenMirrorScreen = imageScaling(0, 0, brokenMirror, 4)
 foggedMirror = imageScaling(0, 0, fog, 1)
 allShelves = imageScaling(0, 0, allShelves, 1.95)
 clocksArea = imageScaling(0, 0, clocksArea, 1.85)
@@ -207,6 +209,7 @@ deskOpened = False
 faucet = False
 slotOneInsert = False
 slotTwoInsert = False
+hammerSelected = True
 slotThreeInsert = False
 largeSans = pygame.font.Font("fonts/OpenSans-Regular.ttf", 28)
 
@@ -278,7 +281,7 @@ while run:
       run = False
     if event.type == pygame.KEYDOWN:
       #This is to allow pressing the 'e' key to open the inv and then close it (should have a note telling the user this option)
-      if inventoryOpen == True and event.key == pygame.K_e and zoomIn == False:
+      if inventoryOpen == True and event.key == pygame.K_e and zoomIn == False and bathroom == False:
         print('E pressed while in inv')
         screen.fill((0, 0, 0, 0))
         if imageIndex == 1:
@@ -289,8 +292,13 @@ while run:
         rightArrow.draw()
         pygame.display.set_caption("Byrne Mansion")
         inventoryOpen = False
-        
-      elif inventoryOpen == False and menuOpen == False and event.key == pygame.K_e and zoomIn == False:
+      elif inventoryOpen == True and event.key == pygame.K_e and zoomIn == False and bathroom == True and mirror == False and sink == False:
+        print('e pressed in inv')
+        BathroomScreen.draw()
+        pygame.display.set_caption('Bathroom?')
+        inventoryOpen = False
+        pygame.display.update()
+      elif inventoryOpen == False and menuOpen == False and event.key == pygame.K_e and zoomIn == False and mirror == False and sink == False:
         print("E pressed")
         screen.fill((0, 0, 0,0))
         inventoryBackground.draw()
@@ -410,6 +418,15 @@ while run:
           mirror = True
           foggedMirror.draw()
           pygame.display.update()
+          breakingMirrorRect = pygame.Rect(236, 169, 80, 80)
+          pygame.draw.rect(screen, BLACK, breakingMirrorRect)
+          pygame.display.update()
+          if breakingMirrorRect.collidepoint(x, y) and hammerSelected == True:
+            print('breaking mirror...')
+            hammerSelected = False
+            mirror = False
+            brokenMirrorScreen.draw()
+            pygame.display.update()
         if ZoomExitButtonRect.collidepoint(x, y) and mirror == True or ZoomExitButtonRect.collidepoint(x, y) and sink == True:
           mirror = False
           sink = False
@@ -622,6 +639,7 @@ while run:
       #inventory
       if inventoryOpen == True:
         slotOneRect = pygame.Rect(196, 296, 45, 56)
+        slotFourRect = pygame.Rect(347, 305, 45, 56)
         if slotOneRect.collidepoint(x, y):
           try:
             print("In the first slot, there is a " + inventory[0])
@@ -630,7 +648,12 @@ while run:
             print("Where does this key lead me?")
           except:
             print("There is nothing in that slot.")
-
+        if slotFourRect.collidepoint(x, y):
+          try:
+            print('HAMMER TIME')
+            hammerSelected = True
+          except:
+            print('Hammer has left the chat')
       if imageIndex == 2:
         deskRect = pygame.Rect(365, 240, 160, 145)
         if deskRect.collidepoint(x, y):
